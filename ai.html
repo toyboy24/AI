@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Campus Info Chatbot</title>
+<link rel="stylesheet" href="ai.css">
+</head>
+<body>
+<div class="chat-container">
+  <div class="chat-header">
+    <i class="fas fa-university campus-icon icon-1"></i>
+    <i class="fas fa-book campus-icon icon-2"></i>
+    <i class="fas fa-graduation-cap campus-icon icon-3"></i>
+    <h1>Campus Assistant</h1>
+    <p>Your guide to university resources</p>
+  </div>
+  
+  <div class="chat-window" id="chat-window">
+    <div class="welcome-message">
+      <h2>Welcome to Campus Assistant!</h2>
+      <p>I'm here to help you navigate campus resources. Ask me about classes, dining, facilities, and more.</p>
+      <div class="campus-features">
+        <div class="feature">
+          <i class="fas fa-clock"></i>
+          <span>Schedules</span>
+        </div>
+        <div class="feature">
+          <i class="fas fa-utensils"></i>
+          <span>Dining</span>
+        </div>
+        <div class="feature">
+          <i class="fas fa-book-open"></i>
+          <span>Library</span>
+        </div>
+        <div class="feature">
+          <i class="fas fa-dumbbell"></i>
+          <span>Fitness</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="quick-actions" id="quick-actions">
+    <button class="quick-action-btn" data-query="class schedule">
+      <i class="fas fa-calendar-alt"></i> Class Schedule
+    </button>
+    <button class="quick-action-btn" data-query="dining options">
+      <i class="fas fa-utensils"></i> Dining
+    </button>
+    <button class="quick-action-btn" data-query="library hours">
+      <i class="fas fa-book-open"></i> Library
+    </button>
+    <button class="quick-action-btn" data-query="campus facilities">
+      <i class="fas fa-building"></i> Facilities
+    </button>
+    <button class="quick-action-btn" data-query="student services">
+      <i class="fas fa-user-graduate"></i> Services
+    </button>
+    <button class="quick-action-btn" data-query="campus events">
+      <i class="fas fa-calendar-check"></i> Events
+    </button>
+  </div>
+  
+  <div class="input-area">
+    <input id="user-input" type="text" placeholder="Ask about campus resources..." />
+    <button id="send-btn" class="send-btn" disabled>
+      <i class="fas fa-paper-plane"></i>
+    </button>
+  </div>
+</div>
+
+<script>
+  const chatWindow = document.getElementById('chat-window');
+  const userInput = document.getElementById('user-input');
+  const sendBtn = document.getElementById('send-btn');
+  const quickActions = document.getElementById('quick-actions');
+  
+  // Enable send button when user types
+  userInput.addEventListener('input', () => {
+    sendBtn.disabled = userInput.value.trim().length === 0;
+  });
+  
+  // Function to add a message to the chat
+  function addMessage(text, isUser = false) {
+    // Remove welcome message if it exists
+    const welcomeMsg = chatWindow.querySelector('.welcome-message');
+    if (welcomeMsg) {
+      welcomeMsg.remove();
+    }
+    
+    const messageDiv = document.createElement('div');
+    messageDiv.className = isUser ? 'message user-message' : 'message bot-message';
+    
+    if (!isUser) {
+      const avatar = document.createElement('div');
+      avatar.className = 'bot-avatar';
+      avatar.innerHTML = '<i class="fas fa-robot"></i>';
+      messageDiv.appendChild(avatar);
+    }
+    
+    const textNode = document.createTextNode(text);
+    messageDiv.appendChild(textNode);
+    
+    chatWindow.appendChild(messageDiv);
+    chatWindow.scrollTop = chatWindow.scrollHeight;
+  }
+  
+  // Function to show typing indicator
+  function showTypingIndicator() {
+    const typingDiv = document.createElement('div');
+    typingDiv.className = 'typing-indicator';
+    typingDiv.id = 'typing-indicator';
+    
+    for (let i = 0; i < 3; i++) {
+      const dot = document.createElement('div');
+      dot.className = 'typing-dot';
+      typingDiv.appendChild(dot);
+    }
+    
+    chatWindow.appendChild(typingDiv);
+    chatWindow.scrollTop = chatWindow.scrollHeight;
+  }
+  
+  // Function to remove typing indicator
+  function removeTypingIndicator() {
+    const typingIndicator = document.getElementById('typing-indicator');
+    if (typingIndicator) {
+      typingIndicator.remove();
+    }
+  }
+  
+  // Bot response logic
+  function getBotResponse(userText) {
+    const text = userText.toLowerCase();
+    
+    if (text.includes('schedule') || text.includes('class')) {
+      return 'You can access your class schedule through the student portal. Classes begin next Monday at 8:00 AM. Do you need help with the portal?';
+    } else if (text.includes('dining') || text.includes('food') || text.includes('cafeteria')) {
+      return 'Campus dining options include:\n• Main Cafeteria (7am-9pm)\n• Student Center Food Court (10am-8pm)\n• Library Café (8am-10pm)\n• Food Trucks near Engineering Building (11am-3pm)';
+    } else if (text.includes('library') || text.includes('book')) {
+      return 'The University Library is open:\n• Monday-Thursday: 7:30am - 12am\n• Friday: 7:30am - 9pm\n• Saturday: 10am - 8pm\n• Sunday: 12pm - 12am\nYou can also access online resources 24/7 with your student ID.';
+    } else if (text.includes('facility') || text.includes('gym') || text.includes('pool')) {
+      return 'Campus facilities include:\n• Recreation Center (gym, pool, courts)\n• Computer Labs (24/7 access)\n• Study Rooms (bookable online)\n• Health Services Center\n• All facilities require your student ID for access.';
+    } else if (text.includes('service') || text.includes('admin') || text.includes('office')) {
+      return 'Student Services are located in the Administration Building:\n• Registrar Office (Room 101)\n• Financial Aid (Room 205)\n• Academic Advising (Room 310)\n• Career Services (Room 415)\nHours: Monday-Friday, 9am-5pm';
+    } else if (text.includes('event') || text.includes('activity') || text.includes('club')) {
+      return 'Upcoming campus events:\n• Spring Festival: April 15-17\n• Career Fair: April 20\n• Research Symposium: May 5\n• Club Expo: Every first Wednesday of the month\nCheck the campus events calendar for more details!';
+    } else if (text.includes('parking') || text.includes('transport')) {
+      return 'Parking permits are available online through the campus portal. Student lots are:\n• Lot A (North Campus)\n• Lot B (South Campus)\n• Lot C (Near Library)\nCampus shuttle runs every 15 minutes from 7am-10pm.';
+    } else if (text.includes('help') || text.includes('support') || text.includes('it')) {
+      return 'IT Support is available 24/7:\n• Phone: (555) 123-4567\n• Email: helpdesk@university.edu\n• In-person: Tech Center, Room 102\nFor academic support, visit the Tutoring Center in the Library.';
+    } else {
+      return "I'm here to help with campus information! You can ask me about:\n• Class schedules\n• Dining options\n• Library hours\n• Campus facilities\n• Student services\n• Upcoming events\n• Parking and transportation\n• IT support";
+    }
+  }
+  
+  // Function to handle sending a message
+  function sendMessage() {
+    const userText = userInput.value.trim();
+    if (!userText) return;
+    
+    // Add user message
+    addMessage(userText, true);
+    userInput.value = '';
+    sendBtn.disabled = true;
+    
+    // Show typing indicator
+    showTypingIndicator();
+    
+    // Simulate bot thinking and response
+    setTimeout(() => {
+      removeTypingIndicator();
+      const botResponse = getBotResponse(userText);
+      addMessage(botResponse);
+    }, 1000);
+  }
+  
+  // Event listeners
+  sendBtn.addEventListener('click', sendMessage);
+  
+  userInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter' && !sendBtn.disabled) {
+      sendMessage();
+    }
+  });
+  
+  // Quick action buttons
+  quickActions.addEventListener('click', (e) => {
+    if (e.target.closest('.quick-action-btn')) {
+      const query = e.target.closest('.quick-action-btn').getAttribute('data-query');
+      userInput.value = query;
+      sendBtn.disabled = false;
+      sendMessage();
+    }
+  });
+</script>
+</body>
+</html>
